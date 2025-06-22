@@ -1,0 +1,18 @@
+{
+  "name": "IsometricFighter",
+  "language": "csharp",
+  "framework": "unity",
+  "entry": "Assets/Scenes/MainScene.unity",
+  "goals": [
+    "Player moves with WASD, jumps (Space), punches (V)",
+    "Player has health, can take damage from enemies",
+    "One dummy enemy: no movement, takes damage, dies and respawns after 10 seconds",
+    "One enemy player: moves by itself and attacks the player with low damage, dies and respawns after 10 seconds"
+  ],
+  "constraints": [
+    "Use MonoBehaviour and Unity lifecycle",
+    "Split logic into separate scripts per behavior",
+    "Use public inspector variables for values",
+    "Scripts should be commented and beginner-friendly"
+  ]
+}

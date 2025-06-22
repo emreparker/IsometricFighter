@@ -1,0 +1,10 @@
+[Ll]ibrary/
+[Tt]emp/
+obj/
+[Bb]uild/
+UserSettings/
+*.csproj
+*.unityproj
+*.sln
+*.user
+*.userprefs
