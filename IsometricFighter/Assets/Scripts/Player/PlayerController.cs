@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
     
     [Header("Animation")]
     [SerializeField] private Animator animator;
+    [SerializeField] private SpriteRenderer spriteRenderer; // For sprite-based animations
     
     [Header("UI Feedback")]
     [SerializeField] public GameUI gameUI; // Reference to UI for punch effects
@@ -38,6 +39,7 @@ public class PlayerController : MonoBehaviour
     private const string ANIM_IS_MOVING = "IsMoving";
     private const string ANIM_IS_JUMPING = "IsJumping";
     private const string ANIM_PUNCH = "Punch";
+    private const string ANIM_SPEED = "Speed"; // For sprite-based movement speed
     
     void Start()
     {
@@ -49,6 +51,12 @@ public class PlayerController : MonoBehaviour
         if (animator == null)
         {
             animator = GetComponent<Animator>();
+        }
+        
+        // Auto-find sprite renderer if not assigned
+        if (spriteRenderer == null)
+        {
+            spriteRenderer = GetComponent<SpriteRenderer>();
         }
         
         // Ensure we have a Rigidbody
@@ -314,12 +322,30 @@ public class PlayerController : MonoBehaviour
     {
         if (animator == null) return;
         
+        // Calculate movement speed for animation
+        float speed = rb.linearVelocity.magnitude;
+        
         // Update movement animation
-        bool isMoving = rb.linearVelocity.magnitude > 0.1f;
+        bool isMoving = speed > 0.1f;
         animator.SetBool(ANIM_IS_MOVING, isMoving);
+        animator.SetFloat(ANIM_SPEED, speed);
         
         // Update jumping animation
         animator.SetBool(ANIM_IS_JUMPING, !isGrounded);
+        
+        // Handle sprite flipping for movement direction (for sprite-based animations)
+        if (spriteRenderer != null && isMoving)
+        {
+            // Flip sprite based on movement direction
+            if (rb.linearVelocity.x < -0.1f)
+            {
+                spriteRenderer.flipX = true; // Face left
+            }
+            else if (rb.linearVelocity.x > 0.1f)
+            {
+                spriteRenderer.flipX = false; // Face right
+            }
+        }
     }
     
     /// <summary>

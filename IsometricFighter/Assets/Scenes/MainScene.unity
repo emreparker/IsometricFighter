@@ -1722,21 +1722,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5737a6b22e4444d29df59d97bbbbee8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
+  moveSpeed: 8
   jumpForce: 8
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
-  acceleration: 15
+  acceleration: 25
   deceleration: 20
-  gravityMultiplier: 3
+  gravityMultiplier: 0.8
   punchCooldown: 0.5
   punchRange: 2
   punchDamage: 10
-  punchRecoilForce: 8
-  punchRecoilUpwardForce: 2
+  punchRecoilForce: 80
+  punchRecoilUpwardForce: 15
   animator: {fileID: 0}
-  gameUI: {fileID: 1784802296}
+  gameUI: {fileID: 0}
 --- !u!1 &1784802295
 GameObject:
   m_ObjectHideFlags: 0
