@@ -1,0 +1,19 @@
+// Unity Isometric Fighting Game using Cursor IDE
+// This project is a simple 3D isometric fighting game where the player can move, jump, and attack enemies.
+
+// Project Context
+// Players can walk, jump, and punch. There are two types of enemies: one dummy that takes hits and respawns, and one basic AI enemy that chases and damages the player.
+// The project is in the early prototyping phase and uses Cursor for AI-assisted development and refactoring.
+
+// Development Environment
+// Language: C#
+// Unity Version: 2023.2.x (3D Core template)
+
+// Instructions
+// Ensure player input feels responsive and animations sync properly.
+// Keep all code modular and follow Unity best practices (e.g., avoid heavy logic in Update).
+// Use physics-based movement with Rigidbody components.
+// Scripts should be clean, commented, and suitable for beginners.
+
+// Additional Notes
+// You may ask the user (Emre) for clarification if you're unsure about mechanics or naming preferences.
