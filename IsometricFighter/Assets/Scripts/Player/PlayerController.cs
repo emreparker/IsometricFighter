@@ -51,13 +51,53 @@ public class PlayerController : MonoBehaviour
         if (animator == null)
         {
             animator = GetComponent<Animator>();
+            Debug.Log($"Auto-found Animator: {(animator != null ? "SUCCESS" : "FAILED")}");
+        }
+        else
+        {
+            Debug.Log("Animator already assigned");
         }
         
         // Auto-find sprite renderer if not assigned
         if (spriteRenderer == null)
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
+            Debug.Log($"Auto-found SpriteRenderer: {(spriteRenderer != null ? "SUCCESS" : "FAILED")}");
         }
+        else
+        {
+            Debug.Log("SpriteRenderer already assigned");
+        }
+        
+        // Comprehensive animation diagnostics
+        Debug.Log("=== ANIMATION DIAGNOSTICS ===");
+        if (animator != null)
+        {
+            Debug.Log($"Animator enabled: {animator.enabled}");
+            Debug.Log($"Animator controller: {(animator.runtimeAnimatorController != null ? animator.runtimeAnimatorController.name : "NULL")}");
+            Debug.Log($"Animator state: {animator.GetCurrentAnimatorStateInfo(0).IsName("Any State")}");
+            Debug.Log($"Animator layer count: {animator.layerCount}");
+        }
+        else
+        {
+            Debug.LogError("ANIMATOR IS NULL - Add Animator component to Player GameObject!");
+        }
+        
+        if (spriteRenderer != null)
+        {
+            Debug.Log($"SpriteRenderer enabled: {spriteRenderer.enabled}");
+            Debug.Log($"Sprite assigned: {(spriteRenderer.sprite != null ? spriteRenderer.sprite.name : "NULL")}");
+            Debug.Log($"SpriteRenderer visible: {spriteRenderer.isVisible}");
+            Debug.Log($"SpriteRenderer color: {spriteRenderer.color}");
+            Debug.Log($"SpriteRenderer sorting layer: {spriteRenderer.sortingLayerName}");
+            Debug.Log($"SpriteRenderer order in layer: {spriteRenderer.sortingOrder}");
+        }
+        else
+        {
+            Debug.LogError("SPRITE RENDERER IS NULL - Add SpriteRenderer component to Player GameObject!");
+        }
+        
+        Debug.Log("=== END DIAGNOSTICS ===");
         
         // Ensure we have a Rigidbody
         if (rb == null)
@@ -109,6 +149,7 @@ public class PlayerController : MonoBehaviour
         CheckGrounded();
         UpdateAnimations();
         ApplyCustomGravity();
+        CheckPlayerVisibility();
     }
     
     /// <summary>
@@ -194,7 +235,7 @@ public class PlayerController : MonoBehaviour
         // Trigger jump animation
         if (animator != null)
         {
-            animator.SetTrigger(ANIM_IS_JUMPING);
+            SetAnimationTrigger(ANIM_IS_JUMPING);
         }
     }
     
@@ -216,7 +257,7 @@ public class PlayerController : MonoBehaviour
         // Trigger punch animation
         if (animator != null)
         {
-            animator.SetTrigger(ANIM_PUNCH);
+            SetAnimationTrigger(ANIM_PUNCH);
         }
         
         // Perform punch attack
@@ -320,18 +361,39 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void UpdateAnimations()
     {
-        if (animator == null) return;
+        // Debug animation system
+        if (animator == null)
+        {
+            Debug.LogWarning("Animator is null! Animation system not working.");
+            return;
+        }
         
         // Calculate movement speed for animation
         float speed = rb.linearVelocity.magnitude;
         
         // Update movement animation
         bool isMoving = speed > 0.1f;
-        animator.SetBool(ANIM_IS_MOVING, isMoving);
-        animator.SetFloat(ANIM_SPEED, speed);
         
-        // Update jumping animation
-        animator.SetBool(ANIM_IS_JUMPING, !isGrounded);
+        // Debug animation parameters
+        Debug.Log($"=== ANIMATION DEBUG ===");
+        Debug.Log($"Speed: {speed}, IsMoving: {isMoving}, IsGrounded: {isGrounded}");
+        
+        // Safely set animation parameters (only if they exist)
+        SetAnimationParameter(ANIM_IS_MOVING, isMoving);
+        SetAnimationParameter(ANIM_SPEED, speed);
+        SetAnimationParameter(ANIM_IS_JUMPING, !isGrounded);
+        
+        // Check if animator is enabled
+        if (!animator.enabled)
+        {
+            Debug.LogWarning("Animator component is disabled!");
+        }
+        
+        // Check if animator has controller
+        if (animator.runtimeAnimatorController == null)
+        {
+            Debug.LogWarning("Animator has no controller assigned!");
+        }
         
         // Handle sprite flipping for movement direction (for sprite-based animations)
         if (spriteRenderer != null && isMoving)
@@ -345,6 +407,54 @@ public class PlayerController : MonoBehaviour
             {
                 spriteRenderer.flipX = false; // Face right
             }
+        }
+    }
+    
+    /// <summary>
+    /// Safely sets animation parameters only if they exist
+    /// </summary>
+    private void SetAnimationParameter(string parameterName, bool value)
+    {
+        try
+        {
+            animator.SetBool(parameterName, value);
+            Debug.Log($"Set {parameterName}: {value}");
+        }
+        catch (System.ArgumentException)
+        {
+            Debug.LogWarning($"Animation parameter '{parameterName}' does not exist in Animator Controller!");
+        }
+    }
+    
+    /// <summary>
+    /// Safely sets animation parameters only if they exist
+    /// </summary>
+    private void SetAnimationParameter(string parameterName, float value)
+    {
+        try
+        {
+            animator.SetFloat(parameterName, value);
+            Debug.Log($"Set {parameterName}: {value}");
+        }
+        catch (System.ArgumentException)
+        {
+            Debug.LogWarning($"Animation parameter '{parameterName}' does not exist in Animator Controller!");
+        }
+    }
+    
+    /// <summary>
+    /// Safely sets animation triggers only if they exist
+    /// </summary>
+    private void SetAnimationTrigger(string triggerName)
+    {
+        try
+        {
+            animator.SetTrigger(triggerName);
+            Debug.Log($"Set {triggerName}: Triggered");
+        }
+        catch (System.ArgumentException)
+        {
+            Debug.LogWarning($"Animation trigger '{triggerName}' does not exist in Animator Controller!");
         }
     }
     
@@ -373,5 +483,32 @@ public class PlayerController : MonoBehaviour
         // Draw ground check ray
         Gizmos.color = Color.green;
         Gizmos.DrawRay(transform.position, Vector3.down * 1.1f);
+    }
+    
+    /// <summary>
+    /// Checks if the player is visible and properly positioned
+    /// </summary>
+    private void CheckPlayerVisibility()
+    {
+        if (spriteRenderer != null)
+        {
+            Debug.Log($"=== VISIBILITY CHECK ===");
+            Debug.Log($"Player position: {transform.position}");
+            Debug.Log($"Player scale: {transform.localScale}");
+            Debug.Log($"Player rotation: {transform.rotation}");
+            Debug.Log($"SpriteRenderer bounds: {spriteRenderer.bounds}");
+            Debug.Log($"SpriteRenderer size: {(spriteRenderer.sprite != null ? spriteRenderer.sprite.rect.size : Vector2.zero)}");
+            Debug.Log($"Camera position: {(Camera.main != null ? Camera.main.transform.position.ToString() : "No main camera")}");
+            
+            // Check if player is in camera view
+            if (Camera.main != null)
+            {
+                Vector3 viewportPoint = Camera.main.WorldToViewportPoint(transform.position);
+                Debug.Log($"Player in viewport: {viewportPoint.x:F2}, {viewportPoint.y:F2}, {viewportPoint.z:F2}");
+                bool inView = viewportPoint.x >= 0 && viewportPoint.x <= 1 && viewportPoint.y >= 0 && viewportPoint.y <= 1 && viewportPoint.z > 0;
+                Debug.Log($"Player visible in camera: {inView}");
+            }
+            Debug.Log($"=== END VISIBILITY CHECK ===");
+        }
     }
 } 
