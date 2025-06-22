@@ -8,11 +8,11 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 8f;
-    [SerializeField] private float jumpForce = 45f;
+    [SerializeField] private float jumpForce = 8f; // Updated to match Inspector value
     [SerializeField] private LayerMask groundLayer = 1;
     [SerializeField] private float acceleration = 25f;
     [SerializeField] private float deceleration = 20f;
-    [SerializeField] private float gravityMultiplier = 1f;
+    [SerializeField] private float gravityMultiplier = 0.8f; // Updated to match Inspector value
     
     [Header("Combat Settings")]
     [SerializeField] private float punchCooldown = 0.5f;
@@ -56,6 +56,43 @@ public class PlayerController : MonoBehaviour
         {
             Debug.LogError("PlayerController requires a Rigidbody component!");
         }
+        else
+        {
+            // Configure Rigidbody for proper jumping
+            ConfigureRigidbody();
+        }
+    }
+    
+    /// <summary>
+    /// Configures the Rigidbody for optimal jumping performance
+    /// </summary>
+    private void ConfigureRigidbody()
+    {
+        // Ensure gravity is enabled
+        rb.useGravity = true;
+        
+        // Set reasonable mass for jumping
+        if (rb.mass > 10f)
+        {
+            rb.mass = 1f;
+            Debug.Log("Rigidbody mass adjusted to 1f for better jumping");
+        }
+        
+        // Reduce drag for better jump response
+        if (rb.linearDamping > 1f)
+        {
+            rb.linearDamping = 0.5f;
+            Debug.Log("Rigidbody drag reduced to 0.5f for better jumping");
+        }
+        
+        // Ensure angular drag is reasonable
+        if (rb.angularDamping > 5f)
+        {
+            rb.angularDamping = 0.05f;
+            Debug.Log("Rigidbody angular drag reduced for better performance");
+        }
+        
+        Debug.Log($"Rigidbody configured - Mass: {rb.mass}, Drag: {rb.linearDamping}, UseGravity: {rb.useGravity}");
     }
     
     void Update()
@@ -129,12 +166,22 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void Jump()
     {
+        Debug.Log($"=== JUMP DEBUG ===");
+        Debug.Log($"Jump force value: {jumpForce}");
+        Debug.Log($"Rigidbody mass: {rb.mass}");
+        Debug.Log($"Rigidbody drag: {rb.linearDamping}");
+        Debug.Log($"Rigidbody angular drag: {rb.angularDamping}");
+        Debug.Log($"Rigidbody use gravity: {rb.useGravity}");
+        Debug.Log($"Velocity before jump: {rb.linearVelocity}");
+        
         // Apply jump force using AddForce for better physics
-        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        Vector3 jumpVector = Vector3.up * jumpForce;
+        rb.AddForce(jumpVector, ForceMode.Impulse);
+        
+        Debug.Log($"Jump vector applied: {jumpVector}");
+        Debug.Log($"Velocity after jump: {rb.linearVelocity}");
         
         isGrounded = false;
-        
-        Debug.Log($"Jump applied! Force: {jumpForce}, Current velocity: {rb.linearVelocity}");
         
         // Trigger jump animation
         if (animator != null)
