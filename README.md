@@ -2,6 +2,8 @@
 
 A 3D isometric fighting game built in Unity where players can move, jump, and engage in combat with AI enemies.
 
+2025 July Update: it's just an initial commit. scripts are developed with cursor to understand it's capabilities with unity
+
 ## 🎮 Game Overview
 
 Isometric Fighter is a prototype fighting game featuring:
